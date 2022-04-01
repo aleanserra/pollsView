@@ -1,8 +1,13 @@
 import { Flex, SimpleGrid, Image, Box, Input, Icon } from "@chakra-ui/react";
 import { Header } from "../components/Header";
+import { SearchQuestion } from "../components/Questions/SearchQuestion";
 import { RiSearchLine } from "react-icons/ri";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { Question } from "../components/Questions/Question";
+
+const QUESTION = "QUESTION";
+const QUESTIONS = "QUESTIONS";
 
 export default function Questions() {
   const [searchInput, setSearchInput] = useState("");
@@ -29,6 +34,19 @@ export default function Questions() {
     title: "Favourite programming language?",
   };
 
+  function renderQuestionView(type: string) {
+    switch (type) {
+      case QUESTION:
+        return <Question />;
+      case QUESTIONS:
+        return (
+          <SearchQuestion onQuestionClick={(i: number) => onQuestionClick(i)} />
+        );
+      default:
+        break;
+    }
+  }
+
   function onQuestionClick(i: number) {
     console.log(i);
   }
@@ -36,70 +54,7 @@ export default function Questions() {
   return (
     <Flex direction="column" h="100vh">
       <Header />
-      <Flex
-        as="label"
-        py="4"
-        px="8"
-        ml="6"
-        maxWidth={400}
-        alignSelf="center"
-        color="gray.200"
-        position="relative"
-        bg="gray.800"
-        borderRadius="full"
-      >
-        <Input
-          color="gray.50"
-          variant="unstyled"
-          placeholder="Search question"
-          px="4"
-          mr="4"
-          _placeholder={{ color: "gray.400" }}
-          onChange={handleChangeSearchInput}
-        />
-        <Icon
-          sx={{ cursor: "pointer" }}
-          as={RiSearchLine}
-          fontSize="20"
-          onClick={onSearch}
-        />
-      </Flex>
-      <Flex w="100%" my="6" maxWidth={1480} mx="auto" px="6">
-        <SimpleGrid
-          flex="1"
-          gap="5"
-          minChildWidth="260px"
-          alignContent="flex-start"
-        >
-          {Array(20)
-            .fill(null)
-            .map((data: any, i: number) => {
-              return (
-                <Box
-                  onClick={() => onQuestionClick(i)}
-                  key={i}
-                  sx={{ cursor: "pointer" }}
-                  maxW="sm"
-                  borderWidth="1px"
-                  borderRadius="lg"
-                  overflow="hidden"
-                >
-                  <Image src={question.imageUrl} alt="Question" />
-                  <Box p="6">
-                    <Box
-                      mt="1"
-                      fontWeight="semibold"
-                      as="h4"
-                      lineHeight="tight"
-                    >
-                      {question.title}
-                    </Box>
-                  </Box>
-                </Box>
-              );
-            })}
-        </SimpleGrid>
-      </Flex>
+      {renderQuestionView(QUESTION)}
     </Flex>
   );
 }
