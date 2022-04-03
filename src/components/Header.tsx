@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Flex, Link, Text } from "@chakra-ui/react";
 
 export function Header() {
   return (
@@ -12,12 +12,14 @@ export function Header() {
       px="6"
       align="center"
     >
-      <Text fontSize="3xl" fontWeight="bold" letterSpacing="tight" w="64">
-        DashPoll
-        <Text as="span" ms="1" color="pink.500">
-          .
+      <Link href="/questions" _hover={{ outline: "none" }}>
+        <Text fontSize="3xl" fontWeight="bold" letterSpacing="tight" w="64">
+          DashPoll
+          <Text as="span" ms="1" color="pink.500">
+            .
+          </Text>
         </Text>
-      </Text>
+      </Link>
     </Flex>
   );
 }
