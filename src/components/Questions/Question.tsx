@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Flex,
   Image,
@@ -19,6 +19,10 @@ import { ShareScreen } from "../ShareScreen";
 import { useQuestion } from "../../services/hooks/useQuestion";
 import { useRouter } from "next/router";
 import { Retry } from "../Retry";
+import { Question } from "../../interfaces/useQuestions.interface";
+import { api } from "../../services/api";
+import { useMutation } from "react-query";
+import { queryClient } from "../../services/queryClient";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -34,15 +38,29 @@ export function Question() {
     }
   }, [router.query]);
 
+  const updateQuestion = useMutation(
+    async (question: Question) => {
+      const response = await api.put(`questions/${router.query.id}`, {
+        ...question,
+      });
+      return response.data.question;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("question");
+      },
+    }
+  );
+
   function onSubmit() {
-    const payload = {
+    const payload: Question = {
       ...questionQuery.data,
       choices: questionQuery.data.choices.map((choice: any, i: number) => {
         if (i.toString() === questionValue) return { ...choice, vote: 1 };
         return { ...choice, vote: 0 };
       }),
     };
-    console.log(payload);
+    updateQuestion.mutateAsync(payload);
   }
 
   const options: ApexOptions = {
