@@ -1,4 +1,4 @@
-import { CircularProgress, Spinner } from "@chakra-ui/react";
+import { CircularProgress } from "@chakra-ui/react";
 
 export function LoadScreen() {
   return (

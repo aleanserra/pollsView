@@ -6,7 +6,6 @@ import {
   Input,
   Icon,
   Link,
-  Text,
   Button,
 } from "@chakra-ui/react";
 import { RiSearchLine, RiCloseFill } from "react-icons/ri";
@@ -15,9 +14,8 @@ import { useRouter } from "next/router";
 import { LoadScreen } from "../LoadScreen";
 import { ShareScreen } from "../ShareScreen";
 import { Retry } from "../Retry";
-import { getQuestions, useQuestions } from "../../services/hooks/useQuestions";
+import { useQuestions } from "../../services/hooks/useQuestions";
 import { useHealth } from "../../services/hooks/useHealth";
-import { Question } from "../../interfaces/useQuestions.interface";
 
 const INITIAL_PAGE = 0;
 
@@ -42,6 +40,7 @@ export function SearchQuestion() {
 
   function onSearch() {
     setPage(0);
+    healthQuery.refetch();
     questionsQuery.remove();
     router.push({ query: { filter: searchInput } });
   }
@@ -98,7 +97,7 @@ export function SearchQuestion() {
           onClick={() => onSearch()}
         />
       </Flex>
-      <Flex justifyContent="center" p="6">
+      <Flex justifyContent="end" p="6" marginRight="5rem">
         <ShareScreen />
       </Flex>
       <Flex

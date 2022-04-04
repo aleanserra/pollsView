@@ -13,7 +13,7 @@ export function Header() {
       align="center"
     >
       <Link href="/questions" _hover={{ outline: "none" }}>
-        <Text fontSize="3xl" fontWeight="bold" letterSpacing="tight" w="64">
+        <Text fontSize="3xl" fontWeight="bold" letterSpacing="tight">
           DashPoll
           <Text as="span" ms="1" color="pink.500">
             .
