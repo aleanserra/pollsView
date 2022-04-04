@@ -12,11 +12,6 @@ export async function getQuestions(
   return data;
 }
 
-export async function getQuestion(id: number): Promise<Question[]> {
-  const { data } = await api.get(`questions/${id}`);
-  return data;
-}
-
 export function useQuestions(page: number, filter: string) {
   return useQuery("questions", () => getQuestions(page, filter), {
     staleTime: 1000 * 5, //5 seconds
