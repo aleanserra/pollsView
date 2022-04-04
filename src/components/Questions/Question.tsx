@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Flex,
   Image,
@@ -16,85 +16,34 @@ import { ApexOptions } from "apexcharts";
 import { theme } from "../../styles/theme";
 import { LoadScreen } from "../LoadScreen";
 import { ShareScreen } from "../ShareScreen";
+import { useQuestion } from "../../services/hooks/useQuestion";
+import { useRouter } from "next/router";
+import { Retry } from "../Retry";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export function Question() {
+  const router = useRouter();
   const [questionValue, setQuestionValue] = useState<string>("0");
+  const [enabled, setEnabled] = useState(false);
+  const questionQuery = useQuestion(+router.query.id, enabled);
 
-  function onSubmitClick() {
+  useEffect(() => {
+    if (router.query.id) {
+      setEnabled(true);
+    }
+  }, [router.query]);
+
+  function onSubmit() {
     const payload = {
-      ...question,
-      choices: question.choices.map((choice: any, i: number) => {
+      ...questionQuery.data,
+      choices: questionQuery.data.choices.map((choice: any, i: number) => {
         if (i.toString() === questionValue) return { ...choice, vote: 1 };
         return { ...choice, vote: 0 };
       }),
     };
     console.log(payload);
   }
-
-  let question = {
-    question: "Favourite programming language?",
-    thumb_url:
-      "https://dummyimage.com/120x120/000/fff.png&text=question+1+image+(120x120)",
-    imageUrl:
-      "https://dummyimage.com/600x400/000/fff.png&text=question+1+image+(600x400)",
-    published_at: "2015-08-05T08:40:51.620Z",
-    choices: [
-      {
-        choice: "Swift",
-        votes: 2048,
-      },
-      {
-        choice: "Python",
-        votes: 1024,
-      },
-      {
-        choice: "Objective-C",
-        votes: 512,
-      },
-      {
-        choice: "Ruby",
-        votes: 256,
-      },
-      {
-        choice: "Ruby",
-        votes: 256,
-      },
-      {
-        choice: "Ruby",
-        votes: 256,
-      },
-      {
-        choice: "Ruby",
-        votes: 256,
-      },
-      {
-        choice: "Ruby",
-        votes: 256,
-      },
-      {
-        choice: "Ruby",
-        votes: 256,
-      },
-      {
-        choice: "Ruby",
-        votes: 256,
-      },
-      {
-        choice: "Ruby",
-        votes: 256,
-      },
-      {
-        choice: "Ruby",
-        votes: 256,
-      },
-      {
-        choice: "Ruby",
-        votes: 256,
-      },
-    ],
-  };
 
   const options: ApexOptions = {
     chart: {
@@ -118,15 +67,18 @@ export function Question() {
       axisTicks: {
         color: theme.colors.gray[600],
       },
-      categories: question.choices.map((choice) => choice.choice),
+      categories: questionQuery.data?.choices.map((choice) => choice.choice),
     },
   };
 
   const series = [
-    { name: "series", data: question.choices.map((choice) => choice.votes) },
+    {
+      name: "series",
+      data: questionQuery.data
+        ? questionQuery.data.choices.map((choice) => choice.votes)
+        : [],
+    },
   ];
-
-  const loading = false;
 
   return (
     <Flex
@@ -139,28 +91,32 @@ export function Question() {
       justify="center"
       alignItems="center"
     >
-      {loading ? (
+      {questionQuery.isLoading ? (
         <LoadScreen />
+      ) : questionQuery.error ? (
+        <Retry />
       ) : (
         <HStack align="stretch" flex="1" spacing="6">
           <Image
             maxHeight="120"
             maxWidth="120"
             objectFit="cover"
-            src={question.thumb_url}
+            src={questionQuery.data?.thumb_url}
             alt="Question"
           />
           <VStack align="stretch" flex="1" spacing="6">
             <Box>
-              <Heading>{question.question}</Heading>
+              <Heading>{questionQuery.data?.question}</Heading>
               <Box as="span">
                 Publiched at{" "}
-                {new Date(question.published_at).toLocaleDateString()}
+                {new Date(
+                  questionQuery.data?.published_at
+                ).toLocaleDateString()}
               </Box>
             </Box>
             <RadioGroup onChange={setQuestionValue} value={questionValue}>
               <Stack>
-                {question.choices.map((choice: any, i) => {
+                {questionQuery.data?.choices.map((choice: any, i) => {
                   return (
                     <Box key={i}>
                       <Radio value={i.toString()} colorScheme="pink">
@@ -172,7 +128,7 @@ export function Question() {
               </Stack>
             </RadioGroup>
             <Box>
-              <Button colorScheme="pink" onClick={onSubmitClick}>
+              <Button colorScheme="pink" onClick={onSubmit}>
                 Submit vote
               </Button>
             </Box>
