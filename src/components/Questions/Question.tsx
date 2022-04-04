@@ -10,6 +10,7 @@ import {
   Button,
   HStack,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
@@ -28,6 +29,7 @@ const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export function Question() {
   const router = useRouter();
+  const toast = useToast();
   const [questionValue, setQuestionValue] = useState<string>("0");
   const [enabled, setEnabled] = useState(false);
   const questionQuery = useQuestion(+router.query.id, enabled);
@@ -48,6 +50,21 @@ export function Question() {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("question");
+        toast({
+          title: "Submitted choice",
+          status: "success",
+          duration: 1000 * 5, //5 seconds
+          isClosable: true,
+        });
+      },
+      onError: () => {
+        queryClient.invalidateQueries("question");
+        toast({
+          title: "Please try again",
+          status: "error",
+          duration: 1000 * 5, //5 seconds
+          isClosable: true,
+        });
       },
     }
   );
@@ -146,7 +163,13 @@ export function Question() {
               </Stack>
             </RadioGroup>
             <Box>
-              <Button colorScheme="pink" onClick={onSubmit}>
+              <Button
+                colorScheme="pink"
+                onClick={onSubmit}
+                disabled={updateQuestion.isLoading}
+                isLoading={updateQuestion.isLoading}
+                loadingText="Submitting"
+              >
                 Submit vote
               </Button>
             </Box>
