@@ -19,6 +19,7 @@ import {
 import { useState } from "react";
 import { api } from "../services/api";
 import { useMutation } from "react-query";
+import { RiUserSharedLine } from "react-icons/ri";
 
 interface ShareData {
   email: string;
@@ -84,6 +85,9 @@ export function ShareScreen() {
     <Box>
       <Button color="gray.50" bg="gray.600" onClick={onOpen}>
         Share
+        <Box marginLeft="0.5rem">
+          <RiUserSharedLine />
+        </Box>
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
