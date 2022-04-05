@@ -27,6 +27,10 @@ import { queryClient } from "../../services/queryClient";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
+const NoConnectivityScreen = dynamic(() => import("../NoConnectivityScreen"), {
+  ssr: false,
+});
+
 export function Question() {
   const router = useRouter();
   const toast = useToast();
@@ -126,6 +130,7 @@ export function Question() {
       justify="center"
       alignItems="center"
     >
+      <NoConnectivityScreen />
       {questionQuery.isLoading ? (
         <LoadScreen />
       ) : questionQuery.error ? (
