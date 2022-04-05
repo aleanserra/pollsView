@@ -16,6 +16,12 @@ import { ShareScreen } from "../ShareScreen";
 import { Retry } from "../Retry";
 import { useQuestions } from "../../services/hooks/useQuestions";
 import { useHealth } from "../../services/hooks/useHealth";
+import dynamic from "next/dynamic";
+import { Question } from "../../interfaces/useQuestions.interface";
+
+const NoConnectivityScreen = dynamic(() => import("../NoConnectivityScreen"), {
+  ssr: false,
+});
 
 const INITIAL_PAGE = 0;
 
@@ -31,6 +37,8 @@ export function SearchQuestion() {
   useEffect(() => {
     if (router.query.filter) {
       setSearchInput(router.query.filter.toString());
+      healthQuery.refetch();
+      questionsQuery.remove();
     }
   }, [router.query.filter]);
 
@@ -45,12 +53,6 @@ export function SearchQuestion() {
     router.push({ query: { filter: searchInput } });
   }
 
-  const question = {
-    imageUrl:
-      "https://dummyimage.com/600x400/000/fff.png&text=question+1+image+(600x400)",
-    title: "Favourite programming language?",
-  };
-
   function moreQuestions() {
     let newPage = page + 1;
     questionsQuery.refetch();
@@ -59,6 +61,7 @@ export function SearchQuestion() {
 
   return (
     <Flex direction="column" h="100vh">
+      <NoConnectivityScreen />
       <Flex
         as="label"
         py="4"
@@ -124,7 +127,7 @@ export function SearchQuestion() {
               minChildWidth="260px"
               alignContent="flex-start"
             >
-              {questionsQuery.data.map((data: any, i: number) => {
+              {questionsQuery.data.map((data: Question, i: number) => {
                 return (
                   <Box
                     key={i}
@@ -135,7 +138,7 @@ export function SearchQuestion() {
                     overflow="hidden"
                   >
                     <Link href={`${i}`}>
-                      <Image src={question.imageUrl} alt="Question" />
+                      <Image src={data.image_url} alt="Question" />
                       <Box p="6">
                         <Box
                           mt="1"
@@ -143,7 +146,7 @@ export function SearchQuestion() {
                           as="h4"
                           lineHeight="tight"
                         >
-                          {question.title}
+                          {data.question}
                         </Box>
                       </Box>
                     </Link>

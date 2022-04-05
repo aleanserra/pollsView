@@ -18,7 +18,6 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { api } from "../services/api";
-import { queryClient } from "../services/queryClient";
 import { useMutation } from "react-query";
 
 interface ShareData {
@@ -26,18 +25,17 @@ interface ShareData {
   url: string;
 }
 
+const EMAIL_REGEX =
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 export function ShareScreen() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const [email, setEmail] = useState("");
   const [isError, setIsError] = useState(false);
 
-  const validateEmail = (email) => {
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
+  const validateEmail = (email: string) => {
+    return String(email).toLowerCase().match(EMAIL_REGEX);
   };
 
   const sendLink = useMutation(
@@ -108,7 +106,6 @@ export function ShareScreen() {
               )}
             </FormControl>
           </ModalBody>
-
           <ModalFooter>
             <Button
               onClick={onSend}
