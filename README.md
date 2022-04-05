@@ -8,6 +8,7 @@ This application was made for people to vote in polls
 
 Make sure the Node is up to date
 -- yarn
+
 -- yarn dev
 
 ## Preview
